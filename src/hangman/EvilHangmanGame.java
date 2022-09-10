@@ -8,10 +8,7 @@ public class EvilHangmanGame implements IEvilHangmanGame{
     //set of words left that are possible to guess, initally all words in the dictionary
     private Set<String> wordSet = new TreeSet<>();
     private Set<String> lettersUsed = new TreeSet<>();
-    public void theGame() throws GuessAlreadyMadeException {
-        wordSet = makeGuess('a');
-        System.out.println(wordSet.toString());
-    }
+    private String word;
 
     @Override
     public void startGame(File dictionary, int wordLength) throws IOException, EmptyDictionaryException {
@@ -20,6 +17,13 @@ public class EvilHangmanGame implements IEvilHangmanGame{
         String str = "";
         wordSet.clear();
         lettersUsed.clear();
+
+        StringBuilder sb = new StringBuilder();
+        for (int iter = 0; iter < wordLength; iter++){
+            sb.append('_');
+        }
+        word = sb.toString();
+
         if(wordLength == 0){
             System.out.println("Throw error");
             throw new EmptyDictionaryException("Wordlength is Zero");
@@ -112,9 +116,10 @@ public class EvilHangmanGame implements IEvilHangmanGame{
 
     @Override
     public Set<String> makeGuess(char guess) throws GuessAlreadyMadeException {
+
+
         //first check if guess already made
         guess = Character.toLowerCase(guess);
-        System.out.println(guess);
         for(String ob: lettersUsed){
             if(guess == ob.charAt(0)){
                 throw new GuessAlreadyMadeException("Already used letter");
@@ -144,17 +149,34 @@ public class EvilHangmanGame implements IEvilHangmanGame{
         //then find the largest partition and make that the new wordSet.
         String bestSubsetKey = subsetStrings.toArray()[0].toString();
         for(String ob: subsetStrings){ //account for all empty maybe??
-            System.out.println("Comparing" + bestSubsetKey + " AND " + ob);
+            //System.out.println("Comparing" + bestSubsetKey + " AND " + ob);
             bestSubsetKey = compareSubsets(bestSubsetKey, ob, partition, guess);
         }
-        System.out.println("Best SubsetKey is " + bestSubsetKey);
         wordSet = partition.get(bestSubsetKey);
+        System.out.println("All possible are:" + wordSet.toString());
+        updateWord(bestSubsetKey);
         return partition.get(bestSubsetKey);
     }
-
+    //takes the subset key and changes all the characters to the new one
+    private void updateWord(String bestSubsetKey){
+        StringBuilder sb = new StringBuilder(word);
+        for(int iter = 0; iter < bestSubsetKey.length(); iter++){
+            if(bestSubsetKey.charAt(iter) != '_'){
+                sb.replace(iter, iter+1, bestSubsetKey.substring(iter, iter+1));
+            }
+        }
+        word = sb.toString();
+    }
+    public String getWord(){
+        return word;
+    }
     @Override
     public SortedSet<Character> getGuessedLetters() {
-        return null;
+        SortedSet<Character> temp = new TreeSet<>();
+        for(String ob: lettersUsed){
+            temp.add(ob.charAt(0));
+        }
+        return temp;
     }
 
 }
