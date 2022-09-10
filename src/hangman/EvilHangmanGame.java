@@ -10,6 +10,7 @@ public class EvilHangmanGame implements IEvilHangmanGame{
 
     public void theGame() throws GuessAlreadyMadeException {
         wordSet = makeGuess('a');
+        System.out.println(wordSet.toString());
     }
 
     @Override
@@ -47,21 +48,16 @@ public class EvilHangmanGame implements IEvilHangmanGame{
         if(partition.get(bestSubsetKey).size() < partition.get(ob).size()){
             return ob;
         }
+        if(partition.get(bestSubsetKey).size() > partition.get(ob).size()){
+            return bestSubsetKey;
+        }
         //case equal
         if(partition.get(bestSubsetKey).size() == partition.get(ob).size()){
-            //case same (for how i have loop set up
+            //case same (for how i have loop set up)
             if(bestSubsetKey == ob){
                 return ob;
             }
-            //case one or the other doesn't have letters
-            else if(!bestSubsetKey.contains(""+guess)){
-                return bestSubsetKey;
-            }
-            else if(!ob.contains(""+guess)){
-                return ob;
-            }
-
-            //case one has one letter the other has two
+            //start counting for equal cases
             int bestCount = 0;
             int obCount = 0;
             for(int iter = 0; iter < ob.length(); iter++){
@@ -72,11 +68,17 @@ public class EvilHangmanGame implements IEvilHangmanGame{
                     obCount++;
                 }
             }
+            if(bestCount == 0){
+                return bestSubsetKey;
+            }
+            if(obCount == 0){
+                return ob;
+            }
             if(bestCount > obCount){
                 return bestSubsetKey;
             }
             if(bestCount < obCount){
-                return bestSubsetKey;
+                return ob;
             }
             if(bestCount == obCount){
                 for(int iter = 0; iter < ob.length(); iter++){
@@ -119,6 +121,7 @@ public class EvilHangmanGame implements IEvilHangmanGame{
         //then find the largest partition and make that the new wordSet.
         String bestSubsetKey = subsetStrings.toArray()[0].toString();
         for(String ob: subsetStrings){ //account for all empty maybe??
+            System.out.println("Comparing" + bestSubsetKey + " AND " + ob);
             bestSubsetKey = compareSubsets(bestSubsetKey, ob, partition, guess);
         }
         System.out.println("Best SubsetKey is " + bestSubsetKey);
