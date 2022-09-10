@@ -11,9 +11,8 @@ public class EvilHangman {
         EvilHangmanGame eh = new EvilHangmanGame();
         String dicString = args[0];
         File file = new File(dicString);
-        int length = 8;
+        int length = 4;
         eh.startGame(file, length);
         eh.theGame();
     }
-
 }

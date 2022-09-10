@@ -18,16 +18,19 @@ public class EvilHangmanGame implements IEvilHangmanGame{
         //set all words in wordSet to the ones in the dictionary that are the current length
         Scanner sc = new Scanner(dictionary);
         String str = "";
+        wordSet.clear();
+
         while(sc.hasNext()){
             str = sc.nextLine();
             if(str.length() == wordLength){
                 wordSet.add(str);
             }
         }
+        sc.close();
         System.out.println(wordSet.toString());
     }
 
-    String getSubsetKey(String str, char guess){
+    private String getSubsetKey(String str, char guess){
         StringBuilder sb = new StringBuilder();
         sb.delete(0,sb.length());
 
@@ -74,10 +77,10 @@ public class EvilHangmanGame implements IEvilHangmanGame{
             if(obCount == 0){
                 return ob;
             }
-            if(bestCount > obCount){
+            if(bestCount < obCount){
                 return bestSubsetKey;
             }
-            if(bestCount < obCount){
+            if(bestCount > obCount){
                 return ob;
             }
             if(bestCount == obCount){
@@ -99,7 +102,9 @@ public class EvilHangmanGame implements IEvilHangmanGame{
 
     @Override
     public Set<String> makeGuess(char guess) throws GuessAlreadyMadeException {
-        //map of sets of strings making up partition, String is a
+        System.out.println(wordSet.toString());
+
+        //map of sets of strings making up partition
         Map<String,Set<String>> partition = new TreeMap<>();
         Set<String> subsetStrings = new TreeSet<>();
         //for each String in wordSet, find where it needs to go in the map
@@ -125,6 +130,7 @@ public class EvilHangmanGame implements IEvilHangmanGame{
             bestSubsetKey = compareSubsets(bestSubsetKey, ob, partition, guess);
         }
         System.out.println("Best SubsetKey is " + bestSubsetKey);
+        wordSet = partition.get(bestSubsetKey);
         return partition.get(bestSubsetKey);
     }
 
