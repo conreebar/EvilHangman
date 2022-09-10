@@ -7,7 +7,7 @@ import java.util.*;
 public class EvilHangmanGame implements IEvilHangmanGame{
     //set of words left that are possible to guess, initally all words in the dictionary
     private Set<String> wordSet = new TreeSet<>();
-
+    private Set<String> lettersUsed = new TreeSet<>();
     public void theGame() throws GuessAlreadyMadeException {
         wordSet = makeGuess('a');
         System.out.println(wordSet.toString());
@@ -19,15 +19,25 @@ public class EvilHangmanGame implements IEvilHangmanGame{
         Scanner sc = new Scanner(dictionary);
         String str = "";
         wordSet.clear();
-
+        lettersUsed.clear();
+        if(wordLength == 0){
+            System.out.println("Throw error");
+            throw new EmptyDictionaryException("Wordlength is Zero");
+        }
+        if(!sc.hasNext()){
+            throw new EmptyDictionaryException("Empty dictionary");
+        }
         while(sc.hasNext()){
             str = sc.nextLine();
             if(str.length() == wordLength){
                 wordSet.add(str);
             }
         }
+        if(wordSet.isEmpty()){
+            throw new EmptyDictionaryException("No valid words in length");
+        }
         sc.close();
-        System.out.println(wordSet.toString());
+        //System.out.println(wordSet.toString());
     }
 
     private String getSubsetKey(String str, char guess){
@@ -102,7 +112,15 @@ public class EvilHangmanGame implements IEvilHangmanGame{
 
     @Override
     public Set<String> makeGuess(char guess) throws GuessAlreadyMadeException {
-        System.out.println(wordSet.toString());
+        //first check if guess already made
+        guess = Character.toLowerCase(guess);
+        System.out.println(guess);
+        for(String ob: lettersUsed){
+            if(guess == ob.charAt(0)){
+                throw new GuessAlreadyMadeException("Already used letter");
+            }
+        }
+        lettersUsed.add(String.valueOf(guess));
 
         //map of sets of strings making up partition
         Map<String,Set<String>> partition = new TreeMap<>();
