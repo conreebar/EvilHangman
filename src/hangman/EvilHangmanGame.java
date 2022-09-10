@@ -157,7 +157,4 @@ public class EvilHangmanGame implements IEvilHangmanGame{
         return null;
     }
 
-    private void hangman(){
-
-    }
 }
