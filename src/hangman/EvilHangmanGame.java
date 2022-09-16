@@ -10,6 +10,12 @@ public class EvilHangmanGame implements IEvilHangmanGame{
     private Set<String> lettersUsed = new TreeSet<>();
     private String word;
 
+    public String getFakeWord(){
+        for(String word: wordSet){
+            return word.toString();
+        }
+        return null;
+    }
     @Override
     public void startGame(File dictionary, int wordLength) throws IOException, EmptyDictionaryException {
         //set all words in wordSet to the ones in the dictionary that are the current length
@@ -117,7 +123,6 @@ public class EvilHangmanGame implements IEvilHangmanGame{
     @Override
     public Set<String> makeGuess(char guess) throws GuessAlreadyMadeException {
 
-
         //first check if guess already made
         guess = Character.toLowerCase(guess);
         for(String ob: lettersUsed){
@@ -154,17 +159,26 @@ public class EvilHangmanGame implements IEvilHangmanGame{
         }
         wordSet = partition.get(bestSubsetKey);
         System.out.println("All possible are:" + wordSet.toString());
-        updateWord(bestSubsetKey);
+        updateWord(bestSubsetKey, guess);
         return partition.get(bestSubsetKey);
     }
     //takes the subset key and changes all the characters to the new one
-    private void updateWord(String bestSubsetKey){
+    private void updateWord(String bestSubsetKey, char guess){
         StringBuilder sb = new StringBuilder(word);
+        int count = 0;
         for(int iter = 0; iter < bestSubsetKey.length(); iter++){
             if(bestSubsetKey.charAt(iter) != '_'){
                 sb.replace(iter, iter+1, bestSubsetKey.substring(iter, iter+1));
+                count++;
             }
         }
+        if(count == 0){
+            System.out.println("Sorry, there are no " + guess + "'s");
+        }
+        else{
+            System.out.println("Yes, there is " + count + " " + guess);
+        }
+
         word = sb.toString();
     }
     public String getWord(){
